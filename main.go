@@ -22,8 +22,6 @@ func main() {
 	http.HandleFunc("/chromaprint", chromaPrintGen)
 
 	log.Printf("Error running HTTP server %s", http.ListenAndServe(*httpbind, nil))
-	//
-
 }
 
 func chromaPrintGen(rw http.ResponseWriter, req *http.Request) {
@@ -69,14 +67,15 @@ func chromaPrintGen(rw http.ResponseWriter, req *http.Request) {
 	fpcalc := gochroma.New(gochroma.AlgorithmDefault)
 	defer fpcalc.Close()
 
+	fpoptions := fingerprint.RawInfo{
+		Src:        inputSamples,
+		Channels:   1,
+		Rate:       44100,
+		MaxSeconds: 120,
+	}
+
 	if req.URL.Query().Get("png") != "" {
-		fprint, err := fpcalc.RawFingerprint(
-			fingerprint.RawInfo{
-				Src:        inputSamples,
-				Channels:   1,
-				Rate:       44100,
-				MaxSeconds: 120,
-			})
+		fprint, err := fpcalc.RawFingerprint(fpoptions)
 
 		if err != nil {
 			http.Error(rw, "Unable to fingerprint "+err.Error(), http.StatusInternalServerError)
@@ -92,13 +91,7 @@ func chromaPrintGen(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 	} else {
-		fprint, err := fpcalc.Fingerprint(
-			fingerprint.RawInfo{
-				Src:        inputSamples,
-				Channels:   1,
-				Rate:       44100,
-				MaxSeconds: 120,
-			})
+		fprint, err := fpcalc.Fingerprint(fpoptions)
 
 		if err != nil {
 			http.Error(rw, "Unable to fingerprint "+err.Error(), http.StatusInternalServerError)
