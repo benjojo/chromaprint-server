@@ -5,6 +5,13 @@ A server where you can send audio files, and you get back chromaprints.
 
 Useful if you have a  _lot_ of audio to fingerprint and you want to split up the tasks over many servers
 
+#Dependencies
+
+ffmpeg and libchromaprint
+
+On debain you would run:
+
+`apt-get install ffmpeg libchromaprint0 libchromaprint-dev` ( -dev is only needed if you are building )
 
 #Example usage:
 

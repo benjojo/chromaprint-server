@@ -1,0 +1,11 @@
+[Service]
+ExecStart=/usr/bin/chromaprint-server
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=chromaprint-server
+User=nobody
+ProtectSystem=strict
+
+[Install]
+WantedBy=multi-user.target 
