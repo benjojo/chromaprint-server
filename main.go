@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
+	"encoding/binary"
 	"flag"
 	"image/png"
 	"io"
@@ -10,13 +12,19 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/go-fingerprint/fingerprint"
 	"github.com/go-fingerprint/gochroma"
 )
 
+var (
+	maxtime = flag.Duration("maxchroma", 2*time.Minute,
+		"the maximum time the server is allowed to make a chromaprint for")
+	httpbind = flag.String("bind", ":6464", "the HTTP bind address")
+)
+
 func main() {
-	httpbind := flag.String("bind", ":6464", "the HTTP bind address")
 	flag.Parse()
 
 	http.HandleFunc("/chromaprint", chromaPrintGen)
@@ -71,7 +79,7 @@ func chromaPrintGen(rw http.ResponseWriter, req *http.Request) {
 		Src:        inputSamples,
 		Channels:   1,
 		Rate:       44100,
-		MaxSeconds: 120,
+		MaxSeconds: uint(maxtime.Seconds()),
 	}
 
 	if req.URL.Query().Get("png") != "" {
@@ -91,14 +99,19 @@ func chromaPrintGen(rw http.ResponseWriter, req *http.Request) {
 			return
 		}
 	} else {
-		fprint, err := fpcalc.Fingerprint(fpoptions)
+		fprint, err := fpcalc.RawFingerprint(fpoptions)
 
 		if err != nil {
 			http.Error(rw, "Unable to fingerprint "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		rw.Write([]byte(fprint))
+		barr := make([]byte, len(fprint)*4)
+		by := bytes.NewBuffer(barr)
+		for _, v := range fprint {
+			// var i int16 = 41
+			binary.Write(by, binary.LittleEndian, int32(v))
+		}
+		rw.Write([]byte(base64.URLEncoding.EncodeToString(by.Bytes())))
 	}
 
 }
