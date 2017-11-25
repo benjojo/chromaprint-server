@@ -5,7 +5,7 @@ A server where you can send audio files, and you get back chromaprints.
 
 Useful if you have a  _lot_ of audio to fingerprint and you want to split up the tasks over many servers
 
-#Dependencies
+# Dependencies
 
 ffmpeg and libchromaprint
 
@@ -13,7 +13,7 @@ On debain you would run:
 
 `apt-get install ffmpeg libchromaprint0 libchromaprint-dev` ( -dev is only needed if you are building )
 
-#Example usage:
+# Example usage:
 
 ## PNG output
 
@@ -46,7 +46,7 @@ Returns a PNG like so:
 ![exampleout](exampleoutput.png)
 
 
-##Base64 output
+## Base64 output
 
 ```
 ben@metropolis:/tmp$ curl --data-binary @test.mp3 -H 'Content-Type: audio/mp3' 'localhost:6464/chromaprint' 
@@ -68,7 +68,7 @@ BDAGIKM4NwpBAoxgwBFBQEGaIAAAEAgBYswRwBijAHMCAIWAsAgoA6xhSAUCiGdOCUIEAFQA4QEyQAkn
 xgBwBACGgAMWEIIQcEoAAZQRQlBAiGNKIEEUUUgYwCxlgghgiGNFDIUoIMpQJCgAVQkAKFFCGICYEtwZAQI 
 ```
 
-##Raw input
+## Raw input
 
 If you already have data in the raw format ( signed 16 bit little ed ints, mono, 44100Hz ) you can skip the
 ffmpeg decoder:
